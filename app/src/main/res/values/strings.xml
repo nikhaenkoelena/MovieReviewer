@@ -5,4 +5,5 @@
     <string name="app_title">MovieReviewer</string>
     <string name="menu_option_main">Main</string>
     <string name="menu_option_favorite">Favorite</string>
+    <string name="description_poster_item">Movie poster</string>
 </resources>
