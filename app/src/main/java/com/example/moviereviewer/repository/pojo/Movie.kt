@@ -1,9 +1,13 @@
 package com.example.moviereviewer.repository.pojo
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
+@Entity(tableName = "movies_table")
 data class Movie(
+    @PrimaryKey (autoGenerate = true)
     @SerializedName("uniqId")
     @Expose
     val uniqId: Int,
