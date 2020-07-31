@@ -8,13 +8,11 @@ object ApiFactory {
 
     const val BASE_URL = "https://api.themoviedb.org/3/"
 
-    fun create(): ApiService {
         val retrofit = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .baseUrl(BASE_URL)
             .build()
 
-        return retrofit.create(ApiService::class.java)
-    }
+        val apiService = retrofit.create(ApiService::class.java)
 }

@@ -10,10 +10,9 @@ interface ApiService {
 
     @GET("discover/movie")
     fun getMovies(
-        @Query("api_key") API_KEY: String?,
-        @Query("language") language: String?,
-        @Query("sort_by") typeOfSort: String?,
-        @Query("vote_count.gte") vote: Int,
+        @Query("api_key") API_KEY: String,
+        @Query("language") language: String,
+        @Query("sort_by") typeOfSort: String,
         @Query("page") page: Int
     ): Observable<MovieResult?>
 

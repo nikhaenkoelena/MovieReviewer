@@ -1,10 +1,13 @@
 package com.example.moviereviewer.repository.pojo
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 @Entity(tableName = "movies_table")
 data class Movie(
     @PrimaryKey (autoGenerate = true)
@@ -28,17 +31,14 @@ data class Movie(
     val original_title: String = "",
     @SerializedName("poster_path_big")
     @Expose
-    val poster_path_big: String = "",
+    var poster_path_big: String = "",
     @SerializedName("poster_path")
     @Expose
-    val poster_path_small: String = "",
-    @SerializedName("backdrop_path")
-    @Expose
-    val backdrop_path: String = "",
+    var poster_path_small: String = "",
     @SerializedName("overview")
     @Expose
     val overview: String = "",
     @SerializedName("release_date")
     @Expose
     val release_date: String = ""
-)
+): Parcelable
