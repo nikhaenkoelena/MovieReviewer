@@ -5,8 +5,9 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.moviereviewer.repository.pojo.Movie
+import com.example.moviereviewer.repository.pojo.Review
 
-@Database(entities = [Movie::class], version = 2, exportSchema = false)
+@Database(entities = [Movie::class, Review::class], version = 3, exportSchema = false)
 abstract class MovieDatabase : RoomDatabase() {
 
     companion object {

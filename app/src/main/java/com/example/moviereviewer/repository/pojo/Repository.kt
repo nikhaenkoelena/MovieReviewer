@@ -15,13 +15,12 @@ import io.reactivex.schedulers.Schedulers
 
 object Repository {
 
-    const val API_KEY = "978314745d3ce652ac32e226b079bf48"
-    const val BASE_POSTER_URL = "https://image.tmdb.org/t/p/"
-    const val SMALL_POSTER_SIZE = "w185"
-    const val BIG_POSTER_SIZE = "w780"
-    const val METHOD_OF_SORT = "popularity.desc"
+    private const val API_KEY = "978314745d3ce652ac32e226b079bf48"
+    private const val BASE_POSTER_URL = "https://image.tmdb.org/t/p/"
+    private const val SMALL_POSTER_SIZE = "w185"
+    private const val BIG_POSTER_SIZE = "w780"
+    private const val METHOD_OF_SORT = "popularity.desc"
 
-    lateinit var contextForDB: Context
     lateinit var db: MovieDatabase
     var compositeDisposable = CompositeDisposable()
 
@@ -48,7 +47,7 @@ object Repository {
                     Log.i("error", "error")
                 }
             }, {
-                Log.i("TEST_OF_LOADING_DATA", "Failure: ${it.message}")
+                Log.d("TEST_OF_LOADING_DATA", "Failure: ${it.message}")
             })
         compositeDisposable.add(disposable)
     }
@@ -65,6 +64,38 @@ object Repository {
     private fun deleteAllMovies() {
         compositeDisposable.add(
             Completable.fromAction { db.movieDao().deleteAllMovies() }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe()
+        )
+    }
+
+    fun loadReviews(id: Int, lang: String, context: Context?) {
+        val disposables = ApiFactory.apiService.getReviews(id, API_KEY, lang)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                val reviews: List<Review>? = it?.reviews
+                deleteAllReviews()
+                if (reviews != null)
+                    insertAllReviews(reviews)
+                Log.i("checkReviews", reviews.toString())
+            }, { Log.d("TEST_OF_LOADING_REVIEWS", "Failure: ${it.message}") })
+        compositeDisposable.add(disposables)
+    }
+
+    private fun deleteAllReviews() {
+        compositeDisposable.add(
+            Completable.fromAction { db.movieDao().deleteAllReviews() }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe()
+        )
+    }
+
+    private fun insertAllReviews(reviews: List<Review>) {
+        compositeDisposable.add(
+            Completable.fromAction { db.movieDao().insertAllReviews(reviews) }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe()

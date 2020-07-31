@@ -6,4 +6,11 @@
     <string name="menu_option_main">Main</string>
     <string name="menu_option_favorite">Favorite</string>
     <string name="description_poster_item">Movie poster</string>
+    <string name="add_to_favorite_button">Add to favorite button</string>
+    <string name="label_title">Name:</string>
+    <string name="label_original_title">Original name:</string>
+    <string name="label_release_date">Release date:</string>
+    <string name="label_overview">Overview</string>
+    <string name="label_trailers">Trailers</string>
+    <string name="label_reviews">Reviews</string>
 </resources>

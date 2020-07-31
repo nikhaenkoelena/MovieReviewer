@@ -51,7 +51,8 @@ class MainFragment : Fragment() {
         recyclerView.adapter = adapter
         setOnClickListener(adapter)
         setOnReachEndListener(adapter)
-        lang = Locale.getDefault().language;
+        lang = Locale.getDefault().language
+        Log.i("checkLangM", lang.toString())
         page = 1
         isLoading = false
         viewModel.loadMovies(lang, page)
@@ -71,7 +72,7 @@ class MainFragment : Fragment() {
             isLoading = false;
             progressBar.visibility = View.INVISIBLE;
             page++;
-            Log.i("check", it.size.toString())
+            Log.i("check", it.toString())
         })
     }
 
@@ -81,7 +82,7 @@ class MainFragment : Fragment() {
                 val movie = adapter.movies[position]
                 val bundle = Bundle()
                 bundle.putParcelable("movie", movie)
-                navController.navigate(R.id.detailFragment)
+                navController.navigate(R.id.action_mainFragment_to_detailFragment, bundle)
             }
         }
 
