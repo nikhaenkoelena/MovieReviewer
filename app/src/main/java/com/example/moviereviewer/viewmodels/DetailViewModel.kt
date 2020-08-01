@@ -11,9 +11,13 @@ class DetailViewModel(application: Application) : AndroidViewModel(application) 
 
     private val db = MovieDatabase.getInstance(application)
     val reviews = db.movieDao().getReviews()
+    val trailers = db.movieDao().getTrailers()
 
     fun loadReviews(id: Int, lang: String, context: Context?) {
-        Log.i("checkLang", lang.toString())
         Repository.loadReviews(id, lang, context)
+    }
+
+    fun loadTrailers(id: Int, lang: String, context: Context?) {
+        Repository.loadTrailers(id, lang, context)
     }
 }

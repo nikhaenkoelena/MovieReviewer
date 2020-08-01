@@ -52,7 +52,6 @@ class MainFragment : Fragment() {
         setOnClickListener(adapter)
         setOnReachEndListener(adapter)
         lang = Locale.getDefault().language
-        Log.i("checkLangM", lang.toString())
         page = 1
         isLoading = false
         viewModel.loadMovies(lang, page)
@@ -72,7 +71,6 @@ class MainFragment : Fragment() {
             isLoading = false;
             progressBar.visibility = View.INVISIBLE;
             page++;
-            Log.i("check", it.toString())
         })
     }
 

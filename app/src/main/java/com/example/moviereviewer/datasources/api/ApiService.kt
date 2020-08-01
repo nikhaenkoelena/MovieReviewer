@@ -2,6 +2,7 @@ package com.example.moviereviewer.datasources.api
 
 import com.example.moviereviewer.repository.pojo.MovieResult
 import com.example.moviereviewer.repository.pojo.ReviewResult
+import com.example.moviereviewer.repository.pojo.TrailersResult
 import io.reactivex.Observable
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -24,5 +25,12 @@ interface ApiService {
         @Query("api_key") API_KEY: String?,
         @Query("language") language: String?
     ): Observable<ReviewResult>
+
+    @GET("movie/{id}/videos")
+    fun getTrailers(
+        @Path("id") id: Int,
+        @Query("api_key") API_KEY: String?,
+        @Query("language") language: String?
+    ): Observable<TrailersResult?>
 
 }

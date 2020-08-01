@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.example.moviereviewer.repository.pojo.Movie
 import com.example.moviereviewer.repository.pojo.Review
+import com.example.moviereviewer.repository.pojo.Trailer
 import retrofit2.http.DELETE
 
 @Dao
@@ -28,4 +29,13 @@ interface MovieDao {
 
     @Query("SELECT * FROM reviews_table")
     fun getReviews() : LiveData<List<Review>>
+
+    @Query("DELETE FROM trailers_table")
+    fun deleteAllTrailers()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAllTrailers(reviews : List<Trailer>)
+
+    @Query("SELECT * FROM trailers_table")
+    fun getTrailers() : LiveData<List<Trailer>>
 }

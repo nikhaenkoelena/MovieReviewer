@@ -2,4 +2,6 @@
 <resources>
     <dimen name="add_to_width">60dp</dimen>
     <dimen name="add_to_height">60dp</dimen>
+    <dimen name="icon_play_width">60dp</dimen>
+    <dimen name="icon_play_height">60dp</dimen>
 </resources>

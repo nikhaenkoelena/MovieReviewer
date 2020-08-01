@@ -1,20 +1,18 @@
 package com.example.moviereviewer.repository.pojo
 
-import android.R
 import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import com.example.moviereviewer.datasources.api.ApiFactory
 import com.example.moviereviewer.datasources.database.MovieDatabase
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.functions.Action
 import io.reactivex.schedulers.Schedulers
 
 
 object Repository {
 
+    private const val BASE_YOUTUBE_URL = "https://www.youtube.com/watch?v="
     private const val API_KEY = "978314745d3ce652ac32e226b079bf48"
     private const val BASE_POSTER_URL = "https://image.tmdb.org/t/p/"
     private const val SMALL_POSTER_SIZE = "w185"
@@ -79,7 +77,6 @@ object Repository {
                 deleteAllReviews()
                 if (reviews != null)
                     insertAllReviews(reviews)
-                Log.i("checkReviews", reviews.toString())
             }, { Log.d("TEST_OF_LOADING_REVIEWS", "Failure: ${it.message}") })
         compositeDisposable.add(disposables)
     }
@@ -96,6 +93,41 @@ object Repository {
     private fun insertAllReviews(reviews: List<Review>) {
         compositeDisposable.add(
             Completable.fromAction { db.movieDao().insertAllReviews(reviews) }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe()
+        )
+    }
+
+    fun loadTrailers(id: Int, lang: String, context: Context?) {
+        val disposables = ApiFactory.apiService.getTrailers(id, API_KEY, lang)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                val trailers: List<Trailer>? = it?.trailers
+                if (trailers != null)
+                for (t in trailers) {
+                    t.key = BASE_YOUTUBE_URL + t.key
+                }
+                deleteAllTrailers()
+                if (trailers != null)
+                    insertAllTrailers(trailers)
+            }, { Log.d("TEST_OF_LOADING_TRAILERS", "Failure: ${it.message}") })
+        compositeDisposable.add(disposables)
+    }
+
+    private fun deleteAllTrailers() {
+        compositeDisposable.add(
+            Completable.fromAction { db.movieDao().deleteAllTrailers() }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe()
+        )
+    }
+
+    private fun insertAllTrailers(trailers: List<Trailer>) {
+        compositeDisposable.add(
+            Completable.fromAction { db.movieDao().insertAllTrailers(trailers) }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe()

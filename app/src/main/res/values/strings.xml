@@ -13,4 +13,5 @@
     <string name="label_overview">Overview</string>
     <string name="label_trailers">Trailers</string>
     <string name="label_reviews">Reviews</string>
+    <string name="icon_play_video">Icon play video</string>
 </resources>

@@ -29,7 +29,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/imageViewBigPoster"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageViewBigPoster"
-            app:srcCompat="@drawable/add_to_favorite"
+            app:srcCompat="@drawable/add_to_fav"
             android:contentDescription="@string/add_to_favorite_button"/>
 
         <include
