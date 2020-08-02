@@ -7,9 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.moviereviewer.R
-import com.example.moviereviewer.repository.pojo.Review
 import com.example.moviereviewer.repository.pojo.Trailer
-import kotlinx.android.synthetic.main.review_item.view.*
 import kotlinx.android.synthetic.main.trailer_item.view.*
 
 class TrailersAdapter(private val context: Context?) :

@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,8 +24,14 @@ import java.util.*
 
 class DetailFragment : Fragment() {
 
+    companion object{
+        const val IS_FAVORITE = true
+        const val  IS_NOT_FAVORITE = false
+    }
+
     private lateinit var detailViewModel: DetailViewModel
-    private var movie: Movie? = null
+    private var movieId: Int = 0
+    private lateinit var movie: Movie
     private var lang = ""
 
     override fun onCreateView(
@@ -36,10 +43,18 @@ class DetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        movie = arguments?.getParcelable("movie")
-        Picasso.get().load(movie?.poster_path_big).placeholder(R.drawable.placeholder)
-            .into(imageViewBigPoster)
-        movie?.let {
+        val id = arguments?.getInt("id")
+        if (id != null) {
+           movieId = id
+       }
+        detailViewModel =
+            ViewModelProviders.of(this).get<DetailViewModel>(DetailViewModel::class.java)
+        detailViewModel.loadMovieById(movieId)
+        detailViewModel.movieById.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            movie = it
+            Picasso.get().load(it.poster_path_big).placeholder(R.drawable.placeholder)
+                .into(imageViewBigPoster)
+            loadAddToFavoriteButton(it.isFavorite)
             with(it) {
                 activity?.title = title
                 textViewTitle.text = title
@@ -47,7 +62,7 @@ class DetailFragment : Fragment() {
                 textViewReleaseDate.text = release_date
                 textViewOverView.text = overview
             }
-        }
+        })
         val recyclerView = recyclerViewReviews
         val recyclerViewT = recyclerViewTrailers
         val reviewAdapter = ReviewAdapter(context)
@@ -56,16 +71,12 @@ class DetailFragment : Fragment() {
         recyclerViewT.adapter = trailersAdapter
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerViewT.layoutManager = LinearLayoutManager(context)
-        setOnClickListenerAddToFavorite()
         setOnTrailerClickListener(trailersAdapter)
-        detailViewModel =
-            ViewModelProviders.of(this).get<DetailViewModel>(DetailViewModel::class.java)
+            setOnClickListenerAddToFavorite()
         lang = Locale.getDefault().language
-        val id = movie?.id
-        if (id != null)
             with(detailViewModel) {
-                loadReviews(id, lang, context)
-                loadTrailers(id, lang, context)
+                loadReviews(movieId, lang, context)
+                loadTrailers(movieId, lang, context)
             }
         getReviews(reviewAdapter)
         getTrailers(trailersAdapter)
@@ -94,7 +105,28 @@ class DetailFragment : Fragment() {
 
     private fun setOnClickListenerAddToFavorite() {
         imageViewAddToFavorite.setOnClickListener {
-
+            if (movie.isFavorite) {
+                setFavorite(IS_NOT_FAVORITE)
+                Toast.makeText(context, "Removed from favorite", Toast.LENGTH_SHORT).show()
+                loadAddToFavoriteButton(IS_NOT_FAVORITE)
+            } else {
+                setFavorite(IS_FAVORITE)
+                Toast.makeText(context, "Added to favorite", Toast.LENGTH_SHORT).show()
+                loadAddToFavoriteButton(IS_FAVORITE)
+            }
         }
     }
+
+    private fun loadAddToFavoriteButton(isFavorite: Boolean) {
+        if (isFavorite) {
+            Picasso.get().load(R.drawable.delete_from_fav).into(imageViewAddToFavorite)
+        } else {
+            Picasso.get().load(R.drawable.add_to_fav).into(imageViewAddToFavorite)
+        }
+    }
+
+    private fun setFavorite(isFavorite: Boolean) {
+        detailViewModel.setFavoriteOption(movie.id, isFavorite)
+    }
+
 }

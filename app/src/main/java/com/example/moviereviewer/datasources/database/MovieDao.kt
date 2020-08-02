@@ -5,7 +5,8 @@ import androidx.room.*
 import com.example.moviereviewer.repository.pojo.Movie
 import com.example.moviereviewer.repository.pojo.Review
 import com.example.moviereviewer.repository.pojo.Trailer
-import retrofit2.http.DELETE
+import io.reactivex.Maybe
+import io.reactivex.Observable
 
 @Dao
 interface MovieDao {
@@ -15,11 +16,14 @@ interface MovieDao {
     fun insertAllMovies(movies : List<Movie>)
 
     @Query("SELECT * FROM movies_table")
-    fun getAllMovies() : LiveData<List<Movie>>
+    fun getAllMovies() : LiveData<MutableList<Movie>>
 
     @Transaction
     @Query("DELETE FROM movies_table")
     fun deleteAllMovies()
+
+    @Query("SELECT *FROM movies_table WHERE id ==:id")
+    fun loadMovieById(id: Int) : LiveData<Movie>
 
     @Query("DELETE FROM reviews_table")
     fun deleteAllReviews()
@@ -38,4 +42,14 @@ interface MovieDao {
 
     @Query("SELECT * FROM trailers_table")
     fun getTrailers() : LiveData<List<Trailer>>
+
+    @Query("UPDATE movies_table SET isFavorite =:isFavorite WHERE id ==:id")
+    fun setFavoriteOption(id: Int, isFavorite: Boolean)
+
+    @Query("SELECT * FROM movies_table WHERE isFavorite =:isFavorite")
+    fun getFavoriteMovies(isFavorite: Boolean) : LiveData<List<Movie>>
+
+    @Transaction
+    @Query("SELECT * FROM movies_table")
+    fun getMoviesForIsFavorite() : Observable<MutableList<Movie>>
 }

@@ -15,5 +15,5 @@ data class MovieResult(
     var totalPages: Int = 0,
     @SerializedName("results")
     @Expose
-    var results: List<Movie>? = null
+    var results: MutableList<Movie>? = null
 )

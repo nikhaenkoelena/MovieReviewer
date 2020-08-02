@@ -103,7 +103,6 @@
         android:text="@string/label_trailers"
         android:layout_marginTop="8dp"
         android:layout_marginStart="10dp"
-        android:visibility="gone"
         android:textColor="@color/colorIcons"
         app:layout_constraintTop_toBottomOf="@+id/textViewOverView"/>
 

@@ -7,7 +7,9 @@ import com.example.moviereviewer.datasources.database.MovieDatabase
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
+import org.reactivestreams.Subscriber
 
 
 object Repository {
@@ -29,20 +31,20 @@ object Repository {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                val movies: List<Movie>? = it?.results
+                var movies: MutableList<Movie>? = it?.results
                 if (movies != null) {
                     for (m in movies) {
                         m.poster_path_big = BASE_POSTER_URL + BIG_POSTER_SIZE + m.poster_path_small
                         m.poster_path_small =
                             BASE_POSTER_URL + SMALL_POSTER_SIZE + m.poster_path_small
                     }
+                    movies = checkIsFavorite(movies)
                     if (page == 1) {
                         deleteAllMovies()
                     }
                     insertMovies(movies)
-                    Log.i("checkpage", page.toString())
                 } else {
-                    Log.i("error", "error")
+                    Log.d("TEST_OF_LOADING_DATA", "error")
                 }
             }, {
                 Log.d("TEST_OF_LOADING_DATA", "Failure: ${it.message}")
@@ -50,13 +52,34 @@ object Repository {
         compositeDisposable.add(disposable)
     }
 
+    private fun checkIsFavorite(movies: MutableList<Movie>): MutableList<Movie> {
+        compositeDisposable.add(db.movieDao().getMoviesForIsFavorite()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                for (m in movies) {
+                    for (i in it) {
+                        if (i.id == m.id) {
+                            m.isFavorite = i.isFavorite
+                            break
+                        } else {
+                            continue
+                        }
+                    }
+                }
+                val twoCopy: MutableList<Movie> = it
+                twoCopy.removeAll(movies)
+                movies.addAll(twoCopy)
+            })
+        return movies
+    }
+
     private fun insertMovies(movies: List<Movie>) {
         compositeDisposable.add(
             Completable.fromAction { db.movieDao().insertAllMovies(movies) }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe()
-        )
+                .subscribe())
     }
 
     private fun deleteAllMovies() {
@@ -106,9 +129,9 @@ object Repository {
             .subscribe({
                 val trailers: List<Trailer>? = it?.trailers
                 if (trailers != null)
-                for (t in trailers) {
-                    t.key = BASE_YOUTUBE_URL + t.key
-                }
+                    for (t in trailers) {
+                        t.key = BASE_YOUTUBE_URL + t.key
+                    }
                 deleteAllTrailers()
                 if (trailers != null)
                     insertAllTrailers(trailers)
@@ -128,6 +151,17 @@ object Repository {
     private fun insertAllTrailers(trailers: List<Trailer>) {
         compositeDisposable.add(
             Completable.fromAction { db.movieDao().insertAllTrailers(trailers) }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe()
+        )
+    }
+
+    fun setFavoriteOption(id: Int, isFavorite: Boolean) {
+        compositeDisposable.add(
+            Completable.fromAction {
+                db.movieDao().setFavoriteOption(id, isFavorite)
+            }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe()

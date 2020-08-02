@@ -8,7 +8,7 @@ import com.example.moviereviewer.repository.pojo.Movie
 import com.example.moviereviewer.repository.pojo.Review
 import com.example.moviereviewer.repository.pojo.Trailer
 
-@Database(entities = [Movie::class, Review::class, Trailer::class], version = 4, exportSchema = false)
+@Database(entities = [Movie::class, Review::class, Trailer::class], version = 6, exportSchema = false)
 abstract class MovieDatabase : RoomDatabase() {
 
     companion object {

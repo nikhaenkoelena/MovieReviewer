@@ -40,5 +40,7 @@ data class Movie(
     val overview: String = "",
     @SerializedName("release_date")
     @Expose
-    val release_date: String = ""
+    val release_date: String = "",
+    @Expose
+    var isFavorite: Boolean = false
 ): Parcelable

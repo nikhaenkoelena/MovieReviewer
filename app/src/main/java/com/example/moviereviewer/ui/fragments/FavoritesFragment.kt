@@ -1,60 +1,68 @@
 package com.example.moviereviewer.ui.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
+import androidx.recyclerview.widget.GridLayoutManager
 import com.example.moviereviewer.R
+import com.example.moviereviewer.ui.adapters.MovieAdapter
+import com.example.moviereviewer.viewmodels.DetailViewModel
+import com.example.moviereviewer.viewmodels.FavoriteViewModel
+import kotlinx.android.synthetic.main.fragment_favorites.*
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [FavoritesFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class FavoritesFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var navController: NavController
+    private lateinit var viewModel: FavoriteViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_favorites, container, false)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment FavoritesFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            FavoritesFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        navController = Navigation.findNavController(view)
+        recyclerViewFavouriteMovies.layoutManager = GridLayoutManager(context, getColumnCount())
+        val adapter = MovieAdapter(context)
+        recyclerViewFavouriteMovies.adapter = adapter
+        viewModel =
+            ViewModelProviders.of(this).get<FavoriteViewModel>(FavoriteViewModel::class.java)
+        setOnPosterClickListener(adapter)
+        getFavouriteMovie(adapter)
+    }
+
+    private fun getColumnCount(): Int {
+        val displayMetrics = DisplayMetrics()
+        activity?.windowManager?.defaultDisplay?.getMetrics(displayMetrics)
+        val width = (displayMetrics.widthPixels / displayMetrics.density).toInt()
+        return if (width / MainFragment.POSTER_WIDTH > MainFragment.COLUMN_COUNT) width / MainFragment.POSTER_WIDTH else MainFragment.COLUMN_COUNT
+    }
+
+    private fun setOnPosterClickListener(adapter: MovieAdapter) {
+        adapter.onPosterClickListener = object : MovieAdapter.OnPosterClickListener {
+            override fun onPosterClick(position: Int) {
+                val movie = adapter.movies[position]
+                val bundle = Bundle()
+                bundle.putInt("id", movie.id)
+                navController.navigate(R.id.action_favoritesFragment_to_detailFragment, bundle)
             }
+        }
+    }
+
+    private fun getFavouriteMovie(adapter: MovieAdapter) {
+        viewModel.favoriteMovies.observe(viewLifecycleOwner, Observer {
+            adapter.movies = it
+        })
     }
 }

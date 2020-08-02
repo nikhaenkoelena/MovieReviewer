@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.moviereviewer.R
-import com.example.moviereviewer.repository.pojo.Movie
 import com.example.moviereviewer.repository.pojo.Review
 import kotlinx.android.synthetic.main.review_item.view.*
 
